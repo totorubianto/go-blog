@@ -7,7 +7,7 @@ require (
 	github.com/codegangsta/envy v0.0.0-20141216192214-4b78388c8ce4 // indirect
 	github.com/codegangsta/gin v0.0.0-20171026143024-cafe2ce98974 // indirect
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-playground/validator/v10 v10.3.0 // indirect
+	github.com/go-playground/validator/v10 v10.3.0
 	github.com/golang/protobuf v1.4.2 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/mattn/go-shellwords v1.0.10 // indirect
