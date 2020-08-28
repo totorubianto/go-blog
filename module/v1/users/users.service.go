@@ -4,14 +4,12 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"strings"
-	"ulum-go/config"
+	"ulum-go/global/error"
 	"ulum-go/module/v1/users/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // UsersService ...
@@ -19,22 +17,24 @@ type UsersService struct{}
 
 var validate *validator.Validate
 
-// Connection ...
-func Connection() *mongo.Collection {
-	db := config.Connect().Database("test").Collection("heroes")
-	return db
-}
-
 // Register ...
 func (UsersService) Register(c *gin.Context) {
-	var heroes []*UsersSchema
 	var json types.Register
 	if err := c.ShouldBindJSON(&json); err != nil {
-		split := strings.Split("asdasdas:asdasd", ":")
-		println(split)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		error.ErrorHandling(c, err.Error())
 		return
 	}
+	ctx := context.Background()
+	cur, err := Connection().InsertOne(ctx, bson.M{"username": json.Username, "password": json.Password, "fullName": json.Fullname, "email": json.Email})
+	if err != nil {
+		log.Fatal("Error on Finding all the documents", err)
+	}
+	c.JSON(http.StatusOK, cur)
+}
+
+// Find ...
+func (UsersService) Find(c *gin.Context) {
+	var users []*UsersSchema
 	cur, err := Connection().Find(context.TODO(), bson.M{})
 	if err != nil {
 		log.Fatal("Error on Finding all the documents", err)
@@ -45,10 +45,25 @@ func (UsersService) Register(c *gin.Context) {
 		if err != nil {
 			log.Fatal("Error on Decoding the document", err)
 		}
-		heroes = append(heroes, &hero)
+		users = append(users, &hero)
 	}
-	for _, hero := range heroes {
-		log.Println(hero.Username, hero.Password)
+	c.JSON(http.StatusOK, users)
+}
+
+// Login ...
+func (UsersService) Login(c *gin.Context) {
+	var json types.Login
+	if err := c.ShouldBindJSON(&json); err != nil {
+		error.ErrorHandling(c, err.Error())
+		return
 	}
-	c.JSON(http.StatusOK, heroes)
+	var password string = json.Password
+	println(password)
+	ctx := context.Background()
+	_ = Connection().FindOne(ctx, bson.M{"username": json.Username}).Decode(&json)
+	if password != json.Password {
+		error.ErrorHandling(c, "Password salah!!!!")
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"statusCode": http.StatusOK, "data": json})
 }
