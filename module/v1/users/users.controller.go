@@ -11,6 +11,6 @@ func Router(r *gin.RouterGroup) {
 	{
 		router.POST("/register", users.Register)
 		router.POST("/login", users.Login)
-		router.POST("/find", users.Find)
+		router.GET("/find", users.Find)
 	}
 }

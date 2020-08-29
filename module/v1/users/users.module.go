@@ -8,6 +8,6 @@ import (
 
 // Connection ...
 func Connection() *mongo.Collection {
-	db := config.Connect().Database("test").Collection("heroes")
+	db := config.Connect().Database("test").Collection("users")
 	return db
 }

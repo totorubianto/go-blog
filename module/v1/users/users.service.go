@@ -25,11 +25,11 @@ func (UsersService) Register(c *gin.Context) {
 		return
 	}
 	ctx := context.Background()
-	cur, err := Connection().InsertOne(ctx, bson.M{"username": json.Username, "password": json.Password, "fullName": json.Fullname, "email": json.Email})
+	user, err := Connection().InsertOne(ctx, bson.M{"username": json.Username, "password": json.Password, "fullName": json.Fullname, "email": json.Email})
 	if err != nil {
 		log.Fatal("Error on Finding all the documents", err)
 	}
-	c.JSON(http.StatusOK, cur)
+	c.JSON(http.StatusOK, gin.H{"statusCode": http.StatusOK, "data": user})
 }
 
 // Find ...
@@ -47,7 +47,7 @@ func (UsersService) Find(c *gin.Context) {
 		}
 		users = append(users, &hero)
 	}
-	c.JSON(http.StatusOK, users)
+	c.JSON(http.StatusOK, gin.H{"statusCode": http.StatusOK, "data": users})
 }
 
 // Login ...
